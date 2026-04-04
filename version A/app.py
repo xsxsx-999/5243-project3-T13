@@ -261,6 +261,34 @@ pre.shiny-text-output {
 }
 """
 
+
+#-----GA,1----------
+# Analytics script with environment check
+ga_script = ui.HTML(f"""
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-M4BHM6T44E"></script>
+<script>
+  const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+
+  if (!isLocal) {{
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){{dataLayer.push(arguments);}}
+      gtag('js', new Date());
+      gtag('config', 'G-M4BHM6T44E', {{ 'user_properties': {{ 'ab_group': 'task_version' }} }});
+  }}
+
+  $(document).on('shiny:connected', function() {{
+      Shiny.addCustomMessageHandler('send_ga_event', function(msg) {{
+          if (!isLocal) {{
+              gtag('event', msg.event_name, msg.params);
+          }} else {{
+              console.log("📊 [Mock GA Event]:", msg.event_name, msg.params);
+          }}
+      }});
+  }});
+</script>
+""")
+
+
 # User Guide Tab
 user_guide_tab = ui.nav_panel(
     "User Guide",
@@ -616,7 +644,11 @@ export_tab = ui.nav_panel(
 
 
 app_ui = ui.page_navbar(
-    ui.head_content(ui.tags.style(custom_css)),
+    # Put ga_script here inside ui.head_content, right next to your custom_css
+    ui.head_content(
+        ui.tags.style(custom_css),
+        ga_script  # GA 
+    ),
     user_guide_tab,
     data_upload_tab,
     cleaning_tab,
@@ -848,6 +880,45 @@ def server(input, output, session):
             status["Task 11"] = status["Task 9"] and is_filtered and ('heat_complex' in plots)
 
         return status
+    
+   #-------GA,2----------
+    import time
+    
+    ga_state = {
+        "last_time": time.time(),
+        "tracked_tasks": set() 
+    }
+
+    @reactive.Effect
+    async def watch_and_send_ga_events():
+        #  We only track the performance of users choosing challenges!
+        if user_session_mode.get() != "task":
+            return
+            
+        current_status = get_task_status()
+        
+        for task_name, is_done in current_status.items():
+            if is_done and (task_name not in ga_state["tracked_tasks"]):
+                
+                ga_state["tracked_tasks"].add(task_name)
+                
+                current_time = time.time()
+                time_spent = round(current_time - ga_state["last_time"], 2)
+                ga_state["last_time"] = current_time
+                
+                print(f"✅ [GA Backend] {task_name} finished in {time_spent}s! Sent.")
+                
+                await session.send_custom_message(
+                    "send_ga_event", 
+                    {
+                        "event_name": "task_completed",
+                        "params": {
+                            "app_version": "A",
+                            "task_id": task_name,
+                            "time_spent_seconds": time_spent
+                        }
+                    }
+                )
 
     # ==========================================
     # 🌟 2. task list UI
@@ -984,18 +1055,58 @@ def server(input, output, session):
     @reactive.event(input.btn_finish_session)
     def trigger_feedback_modal():
         ui.modal_show(session_feedback_modal())
+    #---------GA,3--------- tracking drop-out rate and satisfaction
+    has_sent_final_ga_event = reactive.Value(False)
 
-    # 7. Listen: User submits normally
+    # 7. Listen: User submits normally 
     @reactive.Effect
     @reactive.event(input.btn_submit_feedback)
-    def handle_submit_feedback():
+    async def handle_submit_feedback():
+        if user_session_mode.get() == "task" and not has_sent_final_ga_event.get():
+            has_sent_final_ga_event.set(True) 
+            
+            status = get_task_status()
+            completed_count = sum(1 for v in status.values() if v)
+            
+            await session.send_custom_message(
+                "send_ga_event", 
+                {
+                    "event_name": "session_completed", 
+                    "params": {
+                        "app_version": "A",
+                        "rating": int(input.user_rating()[0]), 
+                        "tasks_completed": completed_count 
+                    }
+                }
+            )
+            print(f"📊 [GA] Session Completed! Rating: {input.user_rating()}, Tasks: {completed_count}")
+
         ui.notification_show("Thanks! Your feedback helps us improve!", type="message", duration=10)
         ui.modal_remove()
 
-    # 8. Listen: User gives up midway
+    # 8. Listen: User gives up midway 
     @reactive.Effect
     @reactive.event(input.btn_quit_feedback)
-    def handle_quit_feedback():
+    async def handle_quit_feedback():
+        if user_session_mode.get() == "task" and not has_sent_final_ga_event.get():
+            has_sent_final_ga_event.set(True)
+            
+            status = get_task_status()
+            completed_count = sum(1 for v in status.values() if v)
+            
+            await session.send_custom_message(
+                "send_ga_event", 
+                {
+                    "event_name": "session_abandoned", 
+                    "params": {
+                        "app_version": "A",
+                        "tasks_completed_at_dropout": completed_count,
+                        "rating": int(input.user_rating()[0]) 
+                    }
+                }
+            )
+            print(f"📉 [GA] Session Abandoned at task {completed_count}, Rating: {input.user_rating()}")
+
         ui.notification_show("Understood. Thanks for trying our App today!", type="warning", duration=10)
         ui.modal_remove()
 
