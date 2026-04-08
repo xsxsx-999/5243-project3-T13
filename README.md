@@ -1,10 +1,11 @@
-## URL for Version A:
-https://xsxshiny.shinyapps.io/proj3-dataexplorer-a/
+## URLs for 2 versions:
+version A: https://xsxshiny.shinyapps.io/ab-test-version-a/
+version B: https://xsxshiny.shinyapps.io/ab-test-version-b/
 
 (To be modified)
 This project is a graduate-level web application built for STATGR5243. It provides a complete pipeline for data science tasks, allowing users to upload datasets (CSV, Excel, JSON, Parquet), clean and preprocess them, engineer new features, and perform exploratory data analysis (EDA) through an intuitive and responsive interface.
 
-## Installation
+## Instruction for local users
 
 1. Clone the repository:
    ```bash
@@ -28,7 +29,7 @@ This project is a graduate-level web application built for STATGR5243. It provid
 Run the application locally:
 
 ```bash
-shiny run app-A.py
+shiny run app.py
 ```
 
 Navigate to `http://localhost:8000` in your browser.
