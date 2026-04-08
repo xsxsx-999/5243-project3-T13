@@ -1,6 +1,6 @@
 ## URL for AB test:
 
-https://xsxshiny.shinyapps.io/ab-test-proj3-t13/
+https://xsxsx-999.github.io/random-url-for-AB-test-5243/
 
 This URL Randomly split users to different versions of our App.
 
