@@ -8,7 +8,7 @@ STATGR5243-Project3/
 ├── version_A/                  # Packaged source code for ShinyApp Version A
 ├── version_B/                  # Packaged source code for ShinyApp Version B
 ├── README.md                   # Project documentation
-├── index.html                  # Reference code for webpage deployment (for more details,see 'URL repository for AB test')
+├── index.html                  # Reference code for webpage deployment
 ├── raw_data.csv                # Raw user data collected via Google Analytics
 ├── cleaning.ipynb              # Jupyter Notebook for cleaning and preprocessing raw data
 ├── clean_events_from_raw.csv   # Cleaned dataset based on events extracted from raw data
