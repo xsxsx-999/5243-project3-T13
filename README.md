@@ -29,7 +29,8 @@ This project fulfills the advanced requirements for Project 3 by demonstrating:
 
 ## URL repository for AB test:
 
-[https://xsxsx-999.github.io/random-url-for-AB-test-5243/](https://github.com/xsxsx-999/random-url-for-AB-test-5243)
+URL: [https://xsxsx-999.github.io/random-url-for-AB-test-5243/](https://xsxsx-999.github.io/random-url-for-AB-test-5243/)
+Repository: https://github.com/xsxsx-999/random-url-for-AB-test-5243
 
 This URL Randomly split users to different versions of our App. 
 
