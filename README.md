@@ -38,6 +38,7 @@ STATGR5243-Project3/
 └── ab_test.ipynb               # Main notebook containing the core A/B testing analysis
 ```
 
+* For locally running the two versions, you may refer our related project2: https://github.com/qz2573-sketch/STATGR5243-Project2
 
 ## Note for Course Submission
 
