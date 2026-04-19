@@ -53,11 +53,12 @@ This project fulfills the advanced requirements for Project 3 by demonstrating:
 
 ## URL for AB test:
 
-Launched URL: [https://xsxsx-999.github.io/random-url-for-AB-test-5243/](https://xsxsx-999.github.io/random-url-for-AB-test-5243/)
+### Deployment & Traffic Splitting
+To ensure a fair A/B test, we deployed a dedicated entry point:
+* **Live Launch URL:** [Click here to enter the experiment](https://xsxsx-999.github.io/random-url-for-AB-test-5243/)
+* **Source Code (Router):** [View GitHub Repository](https://github.com/xsxsx-999/random-url-for-AB-test-5243)
 
-Repository: https://github.com/xsxsx-999/random-url-for-AB-test-5243
-
-This URL Randomly split users to different versions of our App. 
+This URL implements the randomization logic, automatically splitting incoming users between Version A and Version B.
 
 ### Direct URLs for 2 versions:
 
